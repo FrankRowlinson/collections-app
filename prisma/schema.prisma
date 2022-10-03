@@ -1,0 +1,128 @@
+// docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextIndex"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String       @id @default(uuid())
+  username    String       @unique
+  email       String       @unique
+  password    String
+  role        Role         @default(USER)
+  collections Collection[]
+  items       Item[]
+  comments    Comment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Collection {
+  id               String            @id @default(uuid())
+  type             CollectionType    @relation(fields: [collectionTypeId], references: [id])
+  collectionTypeId String
+  name             String
+  author           User              @relation(fields: [authorId], references: [id])
+  authorId         String
+  items            Item[]
+  img              String?
+  fields           CollectionFields?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@fulltext([name])
+}
+
+model CollectionType {
+  id          String       @id @default(uuid())
+  name        String
+  collections Collection[]
+}
+
+model CollectionFields {
+  id           String            @id @default(uuid())
+  collection   Collection        @relation(fields: [collectionId], references: [id])
+  collectionId String            @unique
+  fields       CollectionField[]
+}
+
+model CollectionField {
+  id                 String            @id @default(uuid())
+  fieldName          String
+  type               FieldType         @default(STRING)
+  collectionFields   CollectionFields? @relation(fields: [collectionFieldsId], references: [id])
+  collectionFieldsId String?
+}
+
+model Item {
+  id           String      @id @default(uuid())
+  name         String
+  partOf       Collection  @relation(fields: [collectionId], references: [id])
+  collectionId String
+  author       User        @relation(fields: [authorId], references: [id])
+  authorId     String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  img          String?
+  tags         Tag[]
+  fields       ItemFields?
+  Comment      Comment[]
+
+  @@fulltext([name])
+}
+
+model ItemFields {
+  id     String      @id @default(uuid())
+  item   Item        @relation(fields: [itemId], references: [id])
+  itemId String      @unique
+  fields ItemField[]
+}
+
+model ItemField {
+  id           String      @id @default(uuid())
+  type         FieldType   @default(STRING)
+  fieldName    String
+  value        String      @db.Text
+  itemFields   ItemFields? @relation(fields: [itemFieldsId], references: [id])
+  itemFieldsId String?
+
+  @@fulltext([value])
+}
+
+model Comment {
+  id       String @id @default(uuid())
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+  text     String @db.Text
+  item     Item   @relation(fields: [itemId], references: [id])
+  itemId   String
+
+  @@fulltext([text])
+}
+
+model Tag {
+  id    String @id @default(uuid())
+  name  String
+  items Item[]
+
+  @@fulltext([name])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum FieldType {
+  STRING
+  DATE
+  TEXT
+  NUMBER
+  BOOLEAN
+}
