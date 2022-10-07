@@ -6,4 +6,8 @@ router.get('/', async (req, res, next) => {
   res.json({ collections: { ...collections } })
 })
 
+router.post('/', async (req, res, next) => {
+  // TODO
+})
+
 module.exports = router
