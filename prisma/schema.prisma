@@ -30,8 +30,9 @@ model Collection {
   name             String
   author           User              @relation(fields: [authorId], references: [id])
   authorId         String
-  items            Item[]
+  description      String            @db.Text
   img              String?
+  items            Item[]
   fields           CollectionFields?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
@@ -41,7 +42,7 @@ model Collection {
 
 model CollectionType {
   id          String       @id @default(uuid())
-  name        String
+  name        String       @unique
   collections Collection[]
 }
 
@@ -54,7 +55,7 @@ model CollectionFields {
 
 model CollectionField {
   id                 String            @id @default(uuid())
-  fieldName          String
+  name               String
   type               FieldType         @default(STRING)
   collectionFields   CollectionFields? @relation(fields: [collectionFieldsId], references: [id])
   collectionFieldsId String?
@@ -78,15 +79,52 @@ model Item {
 }
 
 model ItemFields {
-  id     String      @id @default(uuid())
-  item   Item        @relation(fields: [itemId], references: [id])
-  itemId String      @unique
-  fields ItemField[]
+  id            String             @id @default(uuid())
+  item          Item               @relation(fields: [itemId], references: [id])
+  itemId        String             @unique
+  stringFields  ItemStringField[]
+  numberFields  ItemNumberField[]
+  booleanFields ItemBooleanField[]
+  textFields    ItemTextField[]
+  dateFields    ItemDateField[]
 }
 
-model ItemField {
+model ItemStringField {
   id           String      @id @default(uuid())
-  type         FieldType   @default(STRING)
+  fieldName    String
+  value        String
+  itemFields   ItemFields? @relation(fields: [itemFieldsId], references: [id])
+  itemFieldsId String?
+
+  @@fulltext([value])
+}
+
+model ItemDateField {
+  id           String      @id @default(uuid())
+  fieldName    String
+  value        DateTime
+  itemFields   ItemFields? @relation(fields: [itemFieldsId], references: [id])
+  itemFieldsId String?
+}
+
+model ItemBooleanField {
+  id           String      @id @default(uuid())
+  fieldName    String
+  value        Boolean
+  itemFields   ItemFields? @relation(fields: [itemFieldsId], references: [id])
+  itemFieldsId String?
+}
+
+model ItemNumberField {
+  id           String      @id @default(uuid())
+  fieldName    String
+  value        Int
+  itemFields   ItemFields? @relation(fields: [itemFieldsId], references: [id])
+  itemFieldsId String?
+}
+
+model ItemTextField {
+  id           String      @id @default(uuid())
   fieldName    String
   value        String      @db.Text
   itemFields   ItemFields? @relation(fields: [itemFieldsId], references: [id])
