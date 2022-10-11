@@ -1,7 +1,7 @@
 const prisma = require('../client')
 
 module.exports = async function createCollection(data, userid) {
-  await prisma.collection.create({
+  const collection = await prisma.collection.create({
     data: {
       name: data.collectionName,
       type: {
@@ -29,4 +29,5 @@ module.exports = async function createCollection(data, userid) {
       },
     },
   })
+  return collection
 }
