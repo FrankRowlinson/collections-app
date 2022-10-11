@@ -19,6 +19,7 @@ CREATE TABLE `Collection` (
     `collectionTypeId` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
     `authorId` VARCHAR(191) NOT NULL,
+    `description` TEXT NOT NULL,
     `img` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
@@ -32,6 +33,7 @@ CREATE TABLE `CollectionType` (
     `id` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
 
+    UNIQUE INDEX `CollectionType_name_key`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -78,14 +80,54 @@ CREATE TABLE `ItemFields` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `ItemField` (
+CREATE TABLE `ItemStringField` (
     `id` VARCHAR(191) NOT NULL,
-    `type` ENUM('STRING', 'DATE', 'TEXT', 'NUMBER', 'BOOLEAN') NOT NULL DEFAULT 'STRING',
+    `fieldName` VARCHAR(191) NOT NULL,
+    `value` VARCHAR(191) NOT NULL,
+    `itemFieldsId` VARCHAR(191) NULL,
+
+    FULLTEXT INDEX `ItemStringField_value_idx`(`value`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `ItemDateField` (
+    `id` VARCHAR(191) NOT NULL,
+    `fieldName` VARCHAR(191) NOT NULL,
+    `value` DATETIME(3) NOT NULL,
+    `itemFieldsId` VARCHAR(191) NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `ItemBooleanField` (
+    `id` VARCHAR(191) NOT NULL,
+    `fieldName` VARCHAR(191) NOT NULL,
+    `value` BOOLEAN NOT NULL,
+    `itemFieldsId` VARCHAR(191) NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `ItemNumberField` (
+    `id` VARCHAR(191) NOT NULL,
+    `fieldName` VARCHAR(191) NOT NULL,
+    `value` INTEGER NOT NULL,
+    `itemFieldsId` VARCHAR(191) NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `ItemTextField` (
+    `id` VARCHAR(191) NOT NULL,
     `fieldName` VARCHAR(191) NOT NULL,
     `value` TEXT NOT NULL,
     `itemFieldsId` VARCHAR(191) NULL,
 
-    FULLTEXT INDEX `ItemField_value_idx`(`value`),
+    FULLTEXT INDEX `ItemTextField_value_idx`(`value`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -106,6 +148,17 @@ CREATE TABLE `Tag` (
     `name` VARCHAR(191) NOT NULL,
 
     FULLTEXT INDEX `Tag_name_idx`(`name`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Session` (
+    `id` VARCHAR(191) NOT NULL,
+    `sid` VARCHAR(191) NOT NULL,
+    `data` TEXT NOT NULL,
+    `expiresAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `Session_sid_key`(`sid`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -140,7 +193,19 @@ ALTER TABLE `Item` ADD CONSTRAINT `Item_authorId_fkey` FOREIGN KEY (`authorId`) 
 ALTER TABLE `ItemFields` ADD CONSTRAINT `ItemFields_itemId_fkey` FOREIGN KEY (`itemId`) REFERENCES `Item`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ItemField` ADD CONSTRAINT `ItemField_itemFieldsId_fkey` FOREIGN KEY (`itemFieldsId`) REFERENCES `ItemFields`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `ItemStringField` ADD CONSTRAINT `ItemStringField_itemFieldsId_fkey` FOREIGN KEY (`itemFieldsId`) REFERENCES `ItemFields`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ItemDateField` ADD CONSTRAINT `ItemDateField_itemFieldsId_fkey` FOREIGN KEY (`itemFieldsId`) REFERENCES `ItemFields`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ItemBooleanField` ADD CONSTRAINT `ItemBooleanField_itemFieldsId_fkey` FOREIGN KEY (`itemFieldsId`) REFERENCES `ItemFields`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ItemNumberField` ADD CONSTRAINT `ItemNumberField_itemFieldsId_fkey` FOREIGN KEY (`itemFieldsId`) REFERENCES `ItemFields`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ItemTextField` ADD CONSTRAINT `ItemTextField_itemFieldsId_fkey` FOREIGN KEY (`itemFieldsId`) REFERENCES `ItemFields`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Comment` ADD CONSTRAINT `Comment_authorId_fkey` FOREIGN KEY (`authorId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

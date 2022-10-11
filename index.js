@@ -1,11 +1,11 @@
 const express = require('express')
 const app = express()
+const cors = require('cors')
 const passport = require('passport')
 const expressSession = require('express-session')
 const prisma = require('./client')
 const { PrismaSessionStore } = require('@quixo3/prisma-session-store')
 const createError = require('http-errors')
-const cors = require('cors')
 require('dotenv').config()
 
 app.use(express.json())
@@ -34,10 +34,6 @@ app.use(
 )
 
 app.use(passport.authenticate('session'))
-
-app.get('/', async (req, res, next) => {
-  res.send({ message: 'Hello, World' })
-})
 
 app.use('/users', require('./routes/users.route'))
 app.use('/collections', require('./routes/collections.route'))
