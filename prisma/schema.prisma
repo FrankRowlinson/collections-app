@@ -44,6 +44,8 @@ model CollectionType {
   id          String       @id @default(uuid())
   name        String       @unique
   collections Collection[]
+
+  @@fulltext([name])
 }
 
 model CollectionFields {
@@ -74,6 +76,7 @@ model Item {
   tags         Tag[]
   fields       ItemFields?
   Comment      Comment[]
+  likes        Int         @default(0) @db.UnsignedInt
 
   @@fulltext([name])
 }

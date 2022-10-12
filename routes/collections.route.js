@@ -13,13 +13,13 @@ const getCollectionFields = require('../services/getCollectionFields')
 // get all collections
 router.get('/', validateUser, async (req, res, next) => {
   const collections = await prisma.collection.findMany()
-  res.json({collections: collections})
+  res.json({ collections: collections })
 })
 
 router.get('/fields/:id', validateUser, async (req, res, next) => {
   try {
     const fields = await getCollectionFields(req.params.id)
-    res.json({fields: fields})
+    res.json({ fields })
   } catch (err) {
     console.log(err)
     next(err)
@@ -36,7 +36,7 @@ router.get('/props', validateUser, async (req, res, next) => {
 router.get('/biggest', async (req, res, next) => {
   try {
     const collections = await getBiggestCollections()
-    res.json({collections})
+    res.json({ collections })
   } catch (err) {
     next(err)
   }
@@ -45,7 +45,7 @@ router.get('/biggest', async (req, res, next) => {
 router.get('/userCollections/', validateUser, async (req, res, next) => {
   try {
     const collections = await getUserCollections(req.user.id)
-    res.json({collections})
+    res.json({ collections })
   } catch (err) {
     next(err)
   }
@@ -54,7 +54,7 @@ router.get('/userCollections/', validateUser, async (req, res, next) => {
 router.get('/userCollections/:id', async (req, res, next) => {
   try {
     const collections = await getUserCollections(req.params.id)
-    res.json({collections: collections})
+    res.json({ collections: collections })
   } catch (err) {
     next(err)
   }
@@ -69,7 +69,6 @@ router.get('/byId/:id', async (req, res, next) => {
     next(err)
   }
 })
-
 
 // create collection
 router.post(

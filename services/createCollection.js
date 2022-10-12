@@ -20,7 +20,7 @@ module.exports = async function createCollection(data, userid) {
             createMany: {
               data:
                 data.customField.map((el) => ({
-                  fieldName: el.name,
+                  name: el.name,
                   type: el.type,
                 })) || null,
             },
