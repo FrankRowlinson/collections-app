@@ -34,6 +34,7 @@ CREATE TABLE `CollectionType` (
     `name` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `CollectionType_name_key`(`name`),
+    FULLTEXT INDEX `CollectionType_name_idx`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -49,7 +50,7 @@ CREATE TABLE `CollectionFields` (
 -- CreateTable
 CREATE TABLE `CollectionField` (
     `id` VARCHAR(191) NOT NULL,
-    `fieldName` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
     `type` ENUM('STRING', 'DATE', 'TEXT', 'NUMBER', 'BOOLEAN') NOT NULL DEFAULT 'STRING',
     `collectionFieldsId` VARCHAR(191) NULL,
 
@@ -65,6 +66,7 @@ CREATE TABLE `Item` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `img` VARCHAR(191) NULL,
+    `likes` INTEGER UNSIGNED NOT NULL DEFAULT 0,
 
     FULLTEXT INDEX `Item_name_idx`(`name`),
     PRIMARY KEY (`id`)
@@ -147,6 +149,7 @@ CREATE TABLE `Tag` (
     `id` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
 
+    UNIQUE INDEX `Tag_name_key`(`name`),
     FULLTEXT INDEX `Tag_name_idx`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

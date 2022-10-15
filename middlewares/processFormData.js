@@ -10,7 +10,6 @@ async function uploadToCloud(file) {
 }
 
 module.exports.processFormData = async function (req, res, next) {
-  console.log("we're at processFormData")
   const data = JSON.parse(req.body.data)
   if (req.file) {
     await uploadToCloud(req.file).then((res) => {

@@ -38,6 +38,7 @@ app.use(passport.authenticate('session'))
 app.use('/users', require('./routes/users.route'))
 app.use('/collections', require('./routes/collections.route'))
 app.use('/items', require('./routes/items.route'))
+app.use('/search', require('./routes/search.route'))
 
 app.use((req, res, next) => {
   next(createError.NotFound())

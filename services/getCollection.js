@@ -5,6 +5,22 @@ module.exports = async function getCollection(id) {
     where: {
       id: id,
     },
+    include: {
+      items: {
+        include: {
+          tags: true,
+          fields: {
+            include: {
+              numberFields: true,
+              booleanFields: true,
+              textFields: true,
+              stringFields: true,
+              dateFields: true,
+            },
+          },
+        },
+      },
+    },
   })
   return collection
 }

@@ -2,12 +2,13 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextIndex"]
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
@@ -75,7 +76,7 @@ model Item {
   img          String?
   tags         Tag[]
   fields       ItemFields?
-  Comment      Comment[]
+  comments     Comment[]
   likes        Int         @default(0) @db.UnsignedInt
 
   @@fulltext([name])
@@ -149,7 +150,7 @@ model Comment {
 
 model Tag {
   id    String @id @default(uuid())
-  name  String
+  name  String @unique
   items Item[]
 
   @@fulltext([name])
