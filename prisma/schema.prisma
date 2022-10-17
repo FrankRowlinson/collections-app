@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
@@ -26,10 +26,10 @@ model User {
 
 model Collection {
   id               String            @id @default(uuid())
-  type             CollectionType    @relation(fields: [collectionTypeId], references: [id])
+  type             CollectionType    @relation(fields: [collectionTypeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   collectionTypeId String
   name             String
-  author           User              @relation(fields: [authorId], references: [id])
+  author           User              @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   authorId         String
   description      String            @db.Text
   img              String?
@@ -51,7 +51,7 @@ model CollectionType {
 
 model CollectionFields {
   id           String            @id @default(uuid())
-  collection   Collection        @relation(fields: [collectionId], references: [id])
+  collection   Collection        @relation(fields: [collectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   collectionId String            @unique
   fields       CollectionField[]
 }
@@ -60,16 +60,16 @@ model CollectionField {
   id                 String            @id @default(uuid())
   name               String
   type               FieldType         @default(STRING)
-  collectionFields   CollectionFields? @relation(fields: [collectionFieldsId], references: [id])
+  collectionFields   CollectionFields? @relation(fields: [collectionFieldsId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   collectionFieldsId String?
 }
 
 model Item {
   id           String      @id @default(uuid())
   name         String
-  partOf       Collection  @relation(fields: [collectionId], references: [id])
+  partOf       Collection  @relation(fields: [collectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   collectionId String
-  author       User        @relation(fields: [authorId], references: [id])
+  author       User        @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   authorId     String
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
@@ -84,7 +84,7 @@ model Item {
 
 model ItemFields {
   id            String             @id @default(uuid())
-  item          Item               @relation(fields: [itemId], references: [id])
+  item          Item               @relation(fields: [itemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   itemId        String             @unique
   stringFields  ItemStringField[]
   numberFields  ItemNumberField[]
@@ -97,7 +97,7 @@ model ItemStringField {
   id           String      @id @default(uuid())
   fieldName    String
   value        String
-  itemFields   ItemFields? @relation(fields: [itemFieldsId], references: [id])
+  itemFields   ItemFields? @relation(fields: [itemFieldsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   itemFieldsId String?
 
   @@fulltext([value])
@@ -107,7 +107,7 @@ model ItemDateField {
   id           String      @id @default(uuid())
   fieldName    String
   value        DateTime
-  itemFields   ItemFields? @relation(fields: [itemFieldsId], references: [id])
+  itemFields   ItemFields? @relation(fields: [itemFieldsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   itemFieldsId String?
 }
 
@@ -115,7 +115,7 @@ model ItemBooleanField {
   id           String      @id @default(uuid())
   fieldName    String
   value        Boolean
-  itemFields   ItemFields? @relation(fields: [itemFieldsId], references: [id])
+  itemFields   ItemFields? @relation(fields: [itemFieldsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   itemFieldsId String?
 }
 
@@ -123,7 +123,7 @@ model ItemNumberField {
   id           String      @id @default(uuid())
   fieldName    String
   value        Int
-  itemFields   ItemFields? @relation(fields: [itemFieldsId], references: [id])
+  itemFields   ItemFields? @relation(fields: [itemFieldsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   itemFieldsId String?
 }
 
@@ -131,18 +131,18 @@ model ItemTextField {
   id           String      @id @default(uuid())
   fieldName    String
   value        String      @db.Text
-  itemFields   ItemFields? @relation(fields: [itemFieldsId], references: [id])
+  itemFields   ItemFields? @relation(fields: [itemFieldsId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   itemFieldsId String?
 
   @@fulltext([value])
 }
 
 model Comment {
-  id       String @id @default(uuid())
-  author   User   @relation(fields: [authorId], references: [id])
-  authorId String
-  text     String @db.Text
-  item     Item   @relation(fields: [itemId], references: [id])
+  id       String  @id @default(uuid())
+  author   User?   @relation(fields: [authorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  authorId String?
+  text     String  @db.Text
+  item     Item    @relation(fields: [itemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   itemId   String
 
   @@fulltext([text])

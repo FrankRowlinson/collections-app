@@ -64,7 +64,11 @@ router.get('/userCollections/:id', async (req, res, next) => {
 router.get('/byId/:id', async (req, res, next) => {
   try {
     const collection = await getCollection(req.params.id)
-    res.json(collection)
+    if (collection) {
+      res.json({ status: 'ok', collection })
+    } else {
+      res.json({ status: 'error', error: 'Collection not found' })
+    }
   } catch (err) {
     next(err)
   }

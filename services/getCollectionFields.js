@@ -7,5 +7,5 @@ module.exports = async function getCollectionFields(id) {
       collectionId: id,
     },
   })
-  return result
+  return result.fields
 }
