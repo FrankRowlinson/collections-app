@@ -10,10 +10,12 @@ require('dotenv').config()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(cors({
-  origin: process.env.FRONTEND_HOST,
-  credentials: true
-}))
+app.use(
+  cors({
+    origin: process.env.FRONTEND_HOST,
+    credentials: true,
+  })
+)
 
 const sessionStore = new PrismaSessionStore(prisma, {
   checkPeriod: 2 * 60 * 1000,
@@ -25,6 +27,8 @@ app.use(
   expressSession({
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 30,
+      sameSite: process.env.MODE === 'dev' ? 'lax' : 'none',
+      secure: process.env.MODE === 'dev' ? false : true,
     },
     secret: process.env.JWT_SECRET,
     resave: false,
