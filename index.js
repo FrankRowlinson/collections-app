@@ -8,21 +8,14 @@ const { PrismaSessionStore } = require('@quixo3/prisma-session-store')
 const createError = require('http-errors')
 require('dotenv').config()
 
+app.set("trust proxy", 1)
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(
   cors({
-    // origin: process.env.FRONTEND_HOST,
-    origin: true,
+    origin: process.env.FRONTEND_HOST,
     credentials: true,
-    methods: ['GET', 'PUT', 'POST', 'DELETE'],
-    allowedHeaders: [
-      'X-Requested-With',
-      'X-HTTP-Method-Override',
-      'Content-Type',
-      'Accept',
-    ],
   })
 )
 
