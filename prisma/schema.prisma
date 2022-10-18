@@ -22,6 +22,7 @@ model User {
   comments    Comment[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  hasAccess   Boolean      @default(true)
 }
 
 model Collection {

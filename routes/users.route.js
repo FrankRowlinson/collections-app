@@ -5,7 +5,7 @@ const LocalStrategy = require('passport-local')
 const bcrypt = require('bcrypt')
 const hashPassword = require('../middlewares/hashPassword')
 const createUser = require('../services/createUser')
-const { validateUser } = require('../middlewares/validateUser')
+const { validateUser, validateAdmin } = require('../middlewares/validateUser')
 
 passport.use(
   new LocalStrategy(function verify(username, password, callback) {
@@ -57,6 +57,11 @@ router.get('/', async (req, res, next) => {
         role: req.user.role,
       })
     : res.json({ role: 'GUEST' })
+})
+
+router.get('/list', validateUser, validateAdmin, async (req, res, next) => {
+  const users = await prisma.user.findMany()
+  res.json({ users })
 })
 
 router.post('/', hashPassword, async (req, res, next) => {
