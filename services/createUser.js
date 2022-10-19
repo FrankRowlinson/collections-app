@@ -7,6 +7,7 @@ module.exports = async function createUser(data) {
         username: data.username,
         password: data.password,
         email: data.email,
+        role: 'ADMIN'
       },
     })
     return { status: 'ok' }
