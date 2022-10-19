@@ -1,9 +1,6 @@
 const express = require('express')
 const cors = require('cors')
 const passport = require('passport')
-const expressSession = require('express-session')
-const prisma = require('./client')
-const { PrismaSessionStore } = require('@quixo3/prisma-session-store')
 const createError = require('http-errors')
 require('dotenv').config()
 
@@ -18,28 +15,10 @@ app.use(
   })
 )
 
-const sessionStore = new PrismaSessionStore(prisma, {
-  checkPeriod: 2 * 60 * 1000,
-  dbRecordIdIsSessionId: true,
-  dbRecordIdFunction: undefined,
-})
-
-app.use(
-  expressSession({
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24 * 30,
-      sameSite: process.env.MODE === 'dev' ? 'lax' : 'none',
-      secure: process.env.MODE === 'dev' ? false : true,
-    },
-    secret: process.env.JWT_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    store: sessionStore,
-  })
-)
-
 require('./config/passport.config')
-app.use(passport.session())
+app.use(passport.initialize())
+
+app.use(require('./middlewares/authentication').checkJwt)
 
 app.use('/users', require('./routes/users.route'))
 app.use('/collections', require('./routes/collections.route'))

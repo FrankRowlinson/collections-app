@@ -1,25 +1,25 @@
 const router = require('express').Router()
 const prisma = require('../client')
 const { upload } = require('../config/multer.config')
-const { validateUser } = require('../middlewares/validateUser')
 const { processFormData } = require('../middlewares/processFormData')
 const createItem = require('../services/createItem')
 const getItems = require('../services/getItems')
 const deleteItems = require('../services/deleteItems')
+const { checkUserAccess } = require('../middlewares/authorization')
 
 router.get('/', async (req, res, next) => {
   const items = await getItems(req.query ? req.query.ids : null)
   res.json({ items })
 })
 
-router.delete('/', validateUser, async (req, res, next) => {
+router.delete('/', checkUserAccess, async (req, res, next) => {
   const result = await deleteItems(req.body.ids, req.user.role, req.user.id)
   res.json(result)
 })
 
 router.post(
   '/',
-  validateUser,
+  checkUserAccess,
   upload.single('img'),
   processFormData,
   async (req, res, next) => {

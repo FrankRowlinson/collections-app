@@ -2,8 +2,8 @@ const router = require('express').Router()
 const prisma = require('../client')
 const { upload } = require('../config/multer.config')
 const { FieldType } = require('@prisma/client')
-const { validateUser } = require('../middlewares/validateUser')
 const { processFormData } = require('../middlewares/processFormData')
+const { checkUserAccess, checkAdminPermissions } = require('../middlewares/authorization')
 const createCollection = require('../services/createCollection')
 const getCollection = require('../services/getCollection')
 const getBiggestCollections = require('../services/getBiggestCollections')
@@ -11,12 +11,12 @@ const getUserCollections = require('../services/getUserCollections')
 const getCollectionFields = require('../services/getCollectionFields')
 
 // get all collections
-router.get('/', validateUser, async (req, res, next) => {
+router.get('/', checkUserAccess, checkAdminPermissions, async (req, res, next) => {
   const collections = await prisma.collection.findMany()
   res.json({ collections: collections })
 })
 
-router.get('/fields/:id', validateUser, async (req, res, next) => {
+router.get('/fields/:id', checkUserAccess, async (req, res, next) => {
   try {
     const fields = await getCollectionFields(req.params.id)
     res.json({ fields })
@@ -26,7 +26,7 @@ router.get('/fields/:id', validateUser, async (req, res, next) => {
   }
 })
 // get field props for create collection form
-router.get('/props', validateUser, async (req, res, next) => {
+router.get('/props', checkUserAccess, async (req, res, next) => {
   const collectionTypes = await prisma.collectionType.findMany()
   const fieldTypes = Object.keys(FieldType)
   res.json({ fieldTypes, collectionTypes })
@@ -42,7 +42,7 @@ router.get('/biggest', async (req, res, next) => {
   }
 })
 
-router.get('/userCollections/', validateUser, async (req, res, next) => {
+router.get('/userCollections/', checkUserAccess, async (req, res, next) => {
   try {
     const collections = await getUserCollections(req.user.id)
     res.json({ collections })
@@ -77,7 +77,7 @@ router.get('/byId/:id', async (req, res, next) => {
 // create collection
 router.post(
   '/',
-  validateUser,
+  checkUserAccess,
   upload.single('img'),
   processFormData,
   async (req, res, next) => {

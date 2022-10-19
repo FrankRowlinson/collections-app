@@ -1,9 +1,32 @@
-const passport  = require('passport')
+const passport = require('passport')
 const bcrypt = require('bcrypt')
 const LocalStrategy = require('passport-local')
+const JwtStrategy = require('passport-jwt').Strategy
+const ExtractJwt = require('passport-jwt').ExtractJwt
 const prisma = require('../client')
 
-function verify(username, password, callback) {
+const options = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.JWT_SECRET,
+}
+
+function verifyJwt(jwt_payload, callback) {
+  prisma.user
+    .findUnique({
+      where: { id: jwt_payload.id },
+    })
+    .then((row) => {
+      if (!row || Date(jwt_payload.lastLogout) !== Date(row.lastLogout)) {
+        return callback(null, false, {
+          error: 'user deleted or you logged out',
+        })
+      }
+      return callback(null, row)
+    })
+    .catch((err) => callback(err, false))
+}
+
+function verifyLocal(username, password, callback) {
   prisma.user
     .findUnique({
       where: {
@@ -31,9 +54,11 @@ function verify(username, password, callback) {
     })
 }
 
-const strategy = new LocalStrategy(verify)
+const strategyLocal = new LocalStrategy(verifyLocal)
+const strategyJwt = new JwtStrategy(options, verifyJwt)
 
-passport.use(strategy)
+passport.use(strategyLocal)
+passport.use(strategyJwt)
 
 passport.serializeUser((user, callback) => {
   callback(null, { id: user.id, username: user.username, role: user.role })
