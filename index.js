@@ -1,5 +1,4 @@
 const express = require('express')
-const app = express()
 const cors = require('cors')
 const passport = require('passport')
 const expressSession = require('express-session')
@@ -8,8 +7,8 @@ const { PrismaSessionStore } = require('@quixo3/prisma-session-store')
 const createError = require('http-errors')
 require('dotenv').config()
 
-app.set("trust proxy", 1)
-
+const app = express()
+app.set('trust proxy', 1)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(
@@ -39,7 +38,8 @@ app.use(
   })
 )
 
-app.use(passport.authenticate('session'))
+require('./config/passport.config')
+app.use(passport.session())
 
 app.use('/users', require('./routes/users.route'))
 app.use('/collections', require('./routes/collections.route'))
