@@ -1,7 +1,9 @@
 const prisma = require('../client')
 
 module.exports.deleteUsers = async (ids) => {
-  if (!ids) { return }
+  if (!ids) {
+    return
+  }
   const result = await prisma.user.deleteMany({
     where: {
       id: { in: ids },
@@ -11,10 +13,15 @@ module.exports.deleteUsers = async (ids) => {
 }
 
 module.exports.blockUsers = async (ids) => {
-  if (!ids) { return }
+  if (!ids) {
+    return
+  }
   const result = await prisma.user.updateMany({
     where: {
       id: { in: ids },
+      NOT: {
+        hasAccess: false,
+      },
     },
     data: {
       hasAccess: false,
@@ -24,10 +31,15 @@ module.exports.blockUsers = async (ids) => {
 }
 
 module.exports.unblockUsers = async (ids) => {
-  if (!ids) { return }
+  if (!ids) {
+    return
+  }
   const result = await prisma.user.updateMany({
     where: {
       id: { in: ids },
+      NOT: {
+        hasAccess: true,
+      },
     },
     data: {
       hasAccess: true,
@@ -37,10 +49,15 @@ module.exports.unblockUsers = async (ids) => {
 }
 
 module.exports.changeUsersRole = async (ids, role) => {
-  if (!ids) { return }
+  if (!ids) {
+    return
+  }
   const result = await prisma.user.updateMany({
     where: {
       id: { in: ids },
+      NOT: {
+        role: role,
+      },
     },
     data: {
       role: role,

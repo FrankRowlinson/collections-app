@@ -14,9 +14,15 @@ const {
   unblockUsers,
   changeUsersRole,
 } = require('../services/userManagement')
+const getUserProfileData = require('../services/getUserProfileData')
 
 router.get('/', async (req, res, next) => {
   res.json(req.user)
+})
+
+router.get('/profile', async (req, res, next) => {
+  const result = await getUserProfileData(req.query.id)
+  res.json(result)
 })
 
 router.get(
@@ -51,7 +57,7 @@ router.post(
 )
 
 router.post('/logout', (req, res, next) => {
-  if (req.user) {
+  if (req.user.id) {
     prisma.user
       .update({
         where: { id: req.user.id },
@@ -63,7 +69,9 @@ router.post('/logout', (req, res, next) => {
           .send({ status: 'ok' })
       })
   } else {
-    res.json({ status: 'error', error: "you're not logged in" })
+    res
+      .cookie('token', '', { expires: Number(Date(null)) })
+      .send({ status: 'ok' })
   }
 })
 
@@ -73,8 +81,17 @@ router.delete(
   checkUserAccess,
   checkAdminPermissions,
   async (req, res, next) => {
-    const response = await deleteUsers(req.query.ids)
-    res.json(response)
+    const response = {}
+    try {
+      if (req.query.ids.includes(req.user.id)) {
+        response.triggerLogout = true
+      }
+      const result = await deleteUsers(req.query.ids)
+      response.result = result
+      res.json(response)
+    } catch (err) {
+      next(err)
+    }
   }
 )
 
@@ -83,8 +100,17 @@ router.patch(
   checkUserAccess,
   checkAdminPermissions,
   async (req, res, next) => {
-    const response = await blockUsers(req.body.ids)
-    res.json(response)
+    try {
+      const response = {}
+      if (req.body.ids.includes(req.user.id)) {
+        response.triggerLogout = true
+      }
+      const result = await blockUsers(req.body.ids)
+      response.result = result
+      res.json(response)
+    } catch (err) {
+      next(err)
+    }
   }
 )
 
@@ -93,8 +119,8 @@ router.patch(
   checkUserAccess,
   checkAdminPermissions,
   async (req, res, next) => {
-    const response = await unblockUsers(req.body.ids)
-    res.json(response)
+    const result = await unblockUsers(req.body.ids)
+    res.json({ result })
   }
 )
 
@@ -103,8 +129,17 @@ router.patch(
   checkUserAccess,
   checkAdminPermissions,
   async (req, res, next) => {
-    const response = await changeUsersRole(req.body.ids, req.body.role)
-    res.json(response)
+    try {
+      const response = {}
+      if (req.body.role === 'USER' && req.body.ids.includes(req.user.id)) {
+        response.triggerLogout = true
+      }
+      const result = await changeUsersRole(req.body.ids, req.body.role)
+      response.result = result
+      res.json(response)
+    } catch (err) {
+      next(err)
+    }
   }
 )
 
