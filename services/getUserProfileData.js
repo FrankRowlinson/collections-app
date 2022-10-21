@@ -12,7 +12,18 @@ module.exports = async (id) => {
       _count: {
         select: { items: true, comments: true },
       },
-      collections: true,
+      collections: {
+        select: {
+          id: true,
+          name: true,
+          img: true,
+          description: true,
+          type: { select: { name: true } },
+          _count: {
+            select: { items: true },
+          },
+        },
+      },
     },
   })
   return result

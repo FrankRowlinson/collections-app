@@ -1,18 +1,70 @@
 const prisma = require('../client')
 
-module.exports = async function getItems(ids) {
-  let result
-  console.log(ids)
-  if (ids) {
-    result = await prisma.item.findMany({
-      where: {
-        id: {
-          in: ids,
+module.exports.many = async (ids) => {
+  if (!ids) {
+    return
+  }
+  const result = await prisma.item.findMany({
+    where: {
+      id: {
+        in: ids,
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      img: true,
+      likes: true,
+      author: {
+        select: {
+          username: true,
         },
       },
-    })
-  } else {
-    result = await prisma.item.findMany()
-  }
+      partOf: {
+        select: {
+          name: true,
+          type: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+      createdAt: true,
+    },
+  })
+  return result
+}
+
+module.exports.unique = async (id) => {
+  const result = await prisma.item.findUnique({
+    where: {
+      id: id,
+    },
+    include: {
+      comments: true,
+      author: {
+        select: {
+          username: true,
+        },
+      },
+      partOf: {
+        select: {
+          name: true,
+          type: true,
+        },
+      },
+      fields: {
+        include: {
+          numberFields: true,
+          booleanFields: true,
+          textFields: true,
+          stringFields: true,
+          dateFields: true,
+        },
+      },
+      tags: true,
+    },
+  })
   return result
 }

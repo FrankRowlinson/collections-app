@@ -8,8 +8,13 @@ const deleteItems = require('../services/deleteItems')
 const { checkUserAccess } = require('../middlewares/authorization')
 
 router.get('/', async (req, res, next) => {
-  const items = await getItems(req.query ? req.query.ids : null)
+  const items = await getItems.many(req.query.ids)
   res.json({ items })
+})
+
+router.get('/unique', async (req, res, next) => {
+  const item = await getItems.unique(req.query.id)
+  res.json({ item })
 })
 
 router.delete('/', checkUserAccess, async (req, res, next) => {
