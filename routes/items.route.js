@@ -6,7 +6,9 @@ const createItem = require('../services/createItem')
 const getItems = require('../services/getItems')
 const deleteItems = require('../services/deleteItems')
 const { checkUserAccess } = require('../middlewares/authorization')
+const { like, dislike } = require('../services/like')
 
+//get items
 router.get('/', async (req, res, next) => {
   const items = await getItems.many(req.query.ids)
   res.json({ items })
@@ -17,6 +19,7 @@ router.get('/unique', async (req, res, next) => {
   res.json({ item })
 })
 
+// create or delete
 router.delete('/', checkUserAccess, async (req, res, next) => {
   const result = await deleteItems(req.body.ids, req.user.role, req.user.id)
   res.json(result)
@@ -29,11 +32,11 @@ router.post(
   processFormData,
   async (req, res, next) => {
     try {
-      const item = createItem(req.data, req.user.id)
+      const item = await createItem(req.data, req.user.id)
       res.json({
         status: 'ok',
         message: 'item created',
-        item_id: item.id,
+        itemId: item.id,
       })
     } catch (err) {
       console.log(err)
@@ -41,6 +44,18 @@ router.post(
   }
 )
 
+// likes
+router.post('/like', checkUserAccess, async (req, res, next) => {
+  const result = await like(req.user.id, req.body.itemId)
+  res.json(result ? { status: 'ok', action: 'liked' } : { status: 'error' })
+})
+
+router.delete('/like', checkUserAccess, async (req, res, next) => {
+  const result = await dislike(req.user.id, req.query.itemId)
+  res.json(result ? { status: 'ok', action: 'disliked' } : { status: 'error' })
+})
+
+// tags
 router.get('/tags', async (req, res, next) => {
   const tags = await prisma.tag.findMany()
   res.json({ tags })

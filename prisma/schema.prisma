@@ -24,6 +24,7 @@ model User {
   updatedAt   DateTime     @updatedAt
   hasAccess   Boolean      @default(true)
   lastLogout  DateTime?    @default(now())
+  Likes       Like[]
 }
 
 model Collection {
@@ -79,7 +80,7 @@ model Item {
   tags         Tag[]
   fields       ItemFields?
   comments     Comment[]
-  likes        Int         @default(0) @db.UnsignedInt
+  likes        Like[]
 
   @@fulltext([name])
 }
@@ -137,6 +138,15 @@ model ItemTextField {
   itemFieldsId String?
 
   @@fulltext([value])
+}
+
+model Like {
+  item   Item   @relation(fields: [itemId], references: [id])
+  itemId String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  @@id([userId, itemId])
 }
 
 model Comment {

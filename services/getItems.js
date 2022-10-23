@@ -54,6 +54,7 @@ module.exports.unique = async (id) => {
           type: true,
         },
       },
+      likes: true,
       fields: {
         include: {
           numberFields: true,
