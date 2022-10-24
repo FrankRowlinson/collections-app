@@ -42,7 +42,6 @@ module.exports.unique = async (id) => {
       id: id,
     },
     include: {
-      comments: true,
       author: {
         select: {
           username: true,

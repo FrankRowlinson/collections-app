@@ -21,7 +21,7 @@ router.get('/', async (req, res, next) => {
 })
 
 router.get('/profile', async (req, res, next) => {
-  const result = await getUserProfileData(req.query.id)
+  const result = await getUserProfileData(req.query.id || req.user.id)
   res.json(result)
 })
 

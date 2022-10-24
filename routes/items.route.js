@@ -7,6 +7,8 @@ const getItems = require('../services/getItems')
 const deleteItems = require('../services/deleteItems')
 const { checkUserAccess } = require('../middlewares/authorization')
 const { like, dislike } = require('../services/like')
+const getComments = require('../services/getComments')
+const createComment = require('../services/createComment')
 
 //get items
 router.get('/', async (req, res, next) => {
@@ -53,6 +55,21 @@ router.post('/like', checkUserAccess, async (req, res, next) => {
 router.delete('/like', checkUserAccess, async (req, res, next) => {
   const result = await dislike(req.user.id, req.query.itemId)
   res.json(result ? { status: 'ok', action: 'disliked' } : { status: 'error' })
+})
+
+// comments
+router.get('/comments', async (req, res, next) => {
+  const comments = await getComments(req.query.itemId)
+  res.json({ comments })
+})
+
+router.post('/comments', checkUserAccess, async (req, res, next) => {
+  const result = await createComment(
+    req.user.id,
+    req.body.itemId,
+    req.body.text
+  )
+  res.json({ result })
 })
 
 // tags
