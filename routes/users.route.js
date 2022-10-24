@@ -16,6 +16,11 @@ const {
 } = require('../services/userManagement')
 const getUserProfileData = require('../services/getUserProfileData')
 
+const cookieOptions = {
+  sameSite: process.env.MODE === 'dev' ? 'lax' : 'none',
+  secure: process.env.MODE !== 'dev',
+}
+
 router.get('/', async (req, res, next) => {
   res.json(req.user)
 })
@@ -52,7 +57,11 @@ router.post(
   checkUserAccess,
   generateToken,
   (req, res) => {
-    res.cookie('token', req.token).json({ status: 'ok' })
+    res
+      .cookie('token', req.token, {
+        ...cookieOptions,
+      })
+      .json({ status: 'ok' })
   }
 )
 
@@ -65,12 +74,18 @@ router.post('/logout', (req, res, next) => {
       })
       .then(() => {
         res
-          .cookie('token', '', { expires: Number(Date(null)) })
+          .cookie('token', '', {
+            expires: Number(Date(null)),
+            ...cookieOptions,
+          })
           .send({ status: 'ok' })
       })
   } else {
     res
-      .cookie('token', '', { expires: Number(Date(null)) })
+      .cookie('token', '', {
+        expires: Number(Date(null)),
+        ...cookieOptions,
+      })
       .send({ status: 'ok' })
   }
 })
