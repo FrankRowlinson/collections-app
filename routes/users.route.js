@@ -19,6 +19,7 @@ const getUserProfileData = require('../services/getUserProfileData')
 const cookieOptions = {
   sameSite: process.env.MODE === 'dev' ? 'lax' : 'none',
   secure: process.env.MODE !== 'dev',
+  httpOnly: false,
 }
 
 router.get('/', async (req, res, next) => {
