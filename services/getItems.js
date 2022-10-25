@@ -36,6 +36,16 @@ module.exports.many = async (ids) => {
   return result
 }
 
+module.exports.recent = async () => {
+  const result = await prisma.item.findMany({
+    orderBy: {
+      createdAt: 'desc',
+    },
+    take: 20,
+  })
+  return result
+}
+
 module.exports.unique = async (id) => {
   const result = await prisma.item.findUnique({
     where: {

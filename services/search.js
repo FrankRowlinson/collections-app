@@ -1,6 +1,6 @@
 const prisma = require('../client')
 
-module.exports = async function search(query) {
+module.exports.search = async (query) => {
   const result = await prisma.item.findMany({
     select: {
       id: true,

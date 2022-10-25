@@ -9,10 +9,16 @@ const { checkUserAccess } = require('../middlewares/authorization')
 const { like, dislike } = require('../services/like')
 const getComments = require('../services/getComments')
 const createComment = require('../services/createComment')
+const getTagsForCloud = require('../services/getTagsForCloud')
 
 //get items
 router.get('/', async (req, res, next) => {
   const items = await getItems.many(req.query.ids)
+  res.json({ items })
+})
+
+router.get('/recent', async (req, res, next) => {
+  const items = await getItems.recent()
   res.json({ items })
 })
 
@@ -75,6 +81,11 @@ router.post('/comments', checkUserAccess, async (req, res, next) => {
 // tags
 router.get('/tags', async (req, res, next) => {
   const tags = await prisma.tag.findMany()
+  res.json({ tags })
+})
+
+router.get('/tagscloud', async (req, res, next) => {
+  const tags = await getTagsForCloud()
   res.json({ tags })
 })
 
