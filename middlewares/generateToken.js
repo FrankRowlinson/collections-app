@@ -3,7 +3,6 @@ require('dotenv').config()
 
 module.exports = (req, res, next) => {
   const user = req.user
-  console.log(req.headers.cookie.slice(4))
   if (!user) {
     res.json({ status: 'error', error: 'Wrong username or password' })
   } else {

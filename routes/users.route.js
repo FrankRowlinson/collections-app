@@ -22,7 +22,6 @@ const cookieOptions = {
 }
 
 router.get('/', async (req, res, next) => {
-  console.log(req.cookies)
   res.json(req.user)
 })
 
@@ -58,7 +57,6 @@ router.post(
   checkUserAccess,
   generateToken,
   (req, res) => {
-    console.log(req.token)
     res
       .cookie('jwt', req.token, {
         ...cookieOptions,
