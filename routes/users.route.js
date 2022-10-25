@@ -19,10 +19,10 @@ const getUserProfileData = require('../services/getUserProfileData')
 const cookieOptions = {
   sameSite: process.env.MODE === 'dev' ? 'lax' : 'none',
   secure: process.env.MODE !== 'dev',
-  httpOnly: false,
 }
 
 router.get('/', async (req, res, next) => {
+  console.log(req.cookies)
   res.json(req.user)
 })
 
@@ -58,8 +58,9 @@ router.post(
   checkUserAccess,
   generateToken,
   (req, res) => {
+    console.log(req.token)
     res
-      .cookie('token', req.token, {
+      .cookie('jwt', req.token, {
         ...cookieOptions,
       })
       .json({ status: 'ok' })
@@ -75,7 +76,7 @@ router.post('/logout', (req, res, next) => {
       })
       .then(() => {
         res
-          .cookie('token', '', {
+          .cookie('jwt', '', {
             expires: Number(Date(null)),
             ...cookieOptions,
           })
@@ -83,7 +84,7 @@ router.post('/logout', (req, res, next) => {
       })
   } else {
     res
-      .cookie('token', '', {
+      .cookie('jwt', '', {
         expires: Number(Date(null)),
         ...cookieOptions,
       })

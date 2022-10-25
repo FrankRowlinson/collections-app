@@ -2,10 +2,12 @@ const express = require('express')
 const cors = require('cors')
 const passport = require('passport')
 const createError = require('http-errors')
+const cookieParser = require('cookie-parser')
 require('dotenv').config()
 
 const app = express()
 app.set('trust proxy', 1)
+app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(

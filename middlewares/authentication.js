@@ -2,6 +2,7 @@ const passport = require('passport')
 
 module.exports.checkJwt = (req, res, next) => {
   passport.authenticate('jwt', (err, user, info) => {
+    console.log(err, user, info)
     if (!user) {
       req.user = { role: 'GUEST' }
     } else {
