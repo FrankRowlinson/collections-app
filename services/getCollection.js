@@ -6,14 +6,14 @@ module.exports = async function getCollection(id) {
       id: id,
     },
     include: {
+      author: {
+        select: { username: true, id: true },
+      },
       items: {
         include: {
           tags: true,
           fields: {
             include: {
-              numberFields: true,
-              booleanFields: true,
-              textFields: true,
               stringFields: true,
               dateFields: true,
             },
