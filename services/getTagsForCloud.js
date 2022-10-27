@@ -9,7 +9,12 @@ module.exports = async () => {
         },
       },
     },
-    take: 50,
+    orderBy: {
+      items: {
+        _count: 'desc',
+      },
+    },
+    take: 40,
   })
   return result
 }

@@ -79,9 +79,7 @@ module.exports.byTag = async (query) => {
     where: {
       tags: {
         some: {
-          name: {
-            search: query,
-          },
+          name: query
         },
       },
     },
