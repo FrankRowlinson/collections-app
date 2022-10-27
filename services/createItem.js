@@ -1,7 +1,6 @@
 const prisma = require('../client')
 
 module.exports = async function createItem(data, userid) {
-  console.log(data)
   const item = await prisma.item.create({
     data: {
       name: data.itemName,

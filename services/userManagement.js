@@ -19,9 +19,7 @@ module.exports.blockUsers = async (ids) => {
   const result = await prisma.user.updateMany({
     where: {
       id: { in: ids },
-      NOT: {
-        hasAccess: false,
-      },
+      hasAccess: true,
     },
     data: {
       hasAccess: false,
@@ -37,9 +35,7 @@ module.exports.unblockUsers = async (ids) => {
   const result = await prisma.user.updateMany({
     where: {
       id: { in: ids },
-      NOT: {
-        hasAccess: true,
-      },
+      hasAccess: false,
     },
     data: {
       hasAccess: true,
