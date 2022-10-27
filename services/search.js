@@ -1,29 +1,31 @@
 const prisma = require('../client')
 
-module.exports.search = async (query) => {
-  const result = await prisma.item.findMany({
+const select = {
+  id: true,
+  name: true,
+  img: true,
+  likes: true,
+  author: {
     select: {
-      id: true,
+      username: true,
+    },
+  },
+  partOf: {
+    select: {
       name: true,
-      img: true,
-      likes: true,
-      author: {
-        select: {
-          username: true,
-        },
-      },
-      partOf: {
+      type: {
         select: {
           name: true,
-          type: {
-            select: {
-              name: true,
-            },
-          },
         },
       },
-      createdAt: true,
     },
+  },
+  createdAt: true,
+}
+
+module.exports.full = async (query) => {
+  const result = await prisma.item.findMany({
+    select: { ...select },
     where: {
       OR: [
         {
@@ -66,6 +68,22 @@ module.exports.search = async (query) => {
           },
         },
       ],
+    },
+  })
+  return result
+}
+
+module.exports.byTag = async (query) => {
+  const result = await prisma.item.findMany({
+    select: { ...select },
+    where: {
+      tags: {
+        some: {
+          name: {
+            search: query,
+          },
+        },
+      },
     },
   })
   return result
