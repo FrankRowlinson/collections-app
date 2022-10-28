@@ -41,7 +41,7 @@ module.exports.recent = async () => {
     orderBy: {
       createdAt: 'desc',
     },
-    take: 20,
+    take: 16,
   })
   return result
 }
