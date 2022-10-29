@@ -9,6 +9,9 @@ module.exports = async function getCollection(id) {
       author: {
         select: { username: true, id: true },
       },
+      type: {
+        select: { name: true },
+      },
       items: {
         include: {
           tags: true,
