@@ -103,6 +103,15 @@ router.post(
   }
 )
 
+// update collection
+router.patch('/edit', checkUserAccess, async (req, res, next) => {
+  const result = await manageCollection.edit(req.body.id, {
+    name: req.body.name,
+    description: req.body.description,
+  })
+  res.json({ status: 'ok', message: 'collection edited' })
+})
+
 // delete collection
 router.delete('/delete', checkUserAccess, async (req, res, next) => {
   const result = await manageCollection.delete(req.query.id)
