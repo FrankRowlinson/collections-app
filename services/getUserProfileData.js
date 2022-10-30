@@ -10,19 +10,7 @@ module.exports = async (id) => {
       role: true,
       createdAt: true,
       _count: {
-        select: { items: true, comments: true },
-      },
-      collections: {
-        select: {
-          id: true,
-          name: true,
-          img: true,
-          description: true,
-          type: { select: { name: true } },
-          _count: {
-            select: { items: true },
-          },
-        },
+        select: { items: true, comments: true, collections: true },
       },
     },
   })

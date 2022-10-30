@@ -1,5 +1,7 @@
 const prisma = require('../client')
 
+const itemsPerPage = 10
+
 const select = {
   id: true,
   name: true,
@@ -23,7 +25,7 @@ const select = {
   createdAt: true,
 }
 
-module.exports.full = async (query) => {
+module.exports.full = async (query, page) => {
   const result = await prisma.item.findMany({
     select: { ...select },
     where: {
@@ -69,20 +71,24 @@ module.exports.full = async (query) => {
         },
       ],
     },
+    take: itemsPerPage,
+    skip: itemsPerPage * (page - 1),
   })
   return result
 }
 
-module.exports.byTag = async (query) => {
+module.exports.byTag = async (query, page) => {
   const result = await prisma.item.findMany({
     select: { ...select },
     where: {
       tags: {
         some: {
-          name: query
+          name: query,
         },
       },
     },
+    take: itemsPerPage,
+    skip: itemsPerPage * (page - 1),
   })
   return result
 }

@@ -51,22 +51,9 @@ router.get('/biggest', async (req, res, next) => {
   }
 })
 
-router.get('/userCollections/', checkUserAccess, async (req, res, next) => {
-  try {
-    const collections = await getUserCollections(req.user.id)
-    res.json({ collections })
-  } catch (err) {
-    next(err)
-  }
-})
-
 router.get('/userCollections/:id', async (req, res, next) => {
-  try {
-    const collections = await getUserCollections(req.params.id)
-    res.json({ collections: collections })
-  } catch (err) {
-    next(err)
-  }
+  const collections = await getUserCollections(req.params.id, req.query.page)
+  res.json({ collections, cursor: parseInt(req.query.page) + 1 })
 })
 
 // get single collection by id
