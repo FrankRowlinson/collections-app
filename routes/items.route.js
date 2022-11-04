@@ -1,15 +1,10 @@
 const router = require('express').Router()
-const prisma = require('../client')
 const { upload } = require('../config/multer.config')
+const { checkUserAccess } = require('../middlewares/authorization')
 const { processFormData } = require('../middlewares/processFormData')
 const createItem = require('../services/createItem')
 const getItems = require('../services/getItems')
 const deleteItems = require('../services/deleteItems')
-const { checkUserAccess } = require('../middlewares/authorization')
-const { like, dislike } = require('../services/like')
-const getComments = require('../services/getComments')
-const createComment = require('../services/createComment')
-const getTagsForCloud = require('../services/getTagsForCloud')
 
 //get items
 router.get('/', async (req, res, next) => {
@@ -51,42 +46,5 @@ router.post(
     }
   }
 )
-
-// likes
-router.post('/like', checkUserAccess, async (req, res, next) => {
-  const result = await like(req.user.id, req.body.itemId)
-  res.json(result ? { status: 'ok', action: 'liked' } : { status: 'error' })
-})
-
-router.delete('/like', checkUserAccess, async (req, res, next) => {
-  const result = await dislike(req.user.id, req.query.itemId)
-  res.json(result ? { status: 'ok', action: 'disliked' } : { status: 'error' })
-})
-
-// comments
-router.get('/comments', async (req, res, next) => {
-  const comments = await getComments(req.query.itemId)
-  res.json({ comments })
-})
-
-router.post('/comments', checkUserAccess, async (req, res, next) => {
-  const result = await createComment(
-    req.user.id,
-    req.body.itemId,
-    req.body.text
-  )
-  res.json({ result })
-})
-
-// tags
-router.get('/tags', async (req, res, next) => {
-  const tags = await prisma.tag.findMany()
-  res.json({ tags })
-})
-
-router.get('/tagscloud', async (req, res, next) => {
-  const tags = await getTagsForCloud()
-  res.json({ tags })
-})
 
 module.exports = router

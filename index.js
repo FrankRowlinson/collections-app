@@ -26,6 +26,9 @@ app.use('/users', require('./routes/users.route'))
 app.use('/collections', require('./routes/collections.route'))
 app.use('/items', require('./routes/items.route'))
 app.use('/search', require('./routes/search.route'))
+app.use('/likes', require('./routes/likes.route'))
+app.use('/comments', require('./routes/comments.route'))
+app.use('/tags', require('./routes/tags.route'))
 
 app.use((req, res, next) => {
   next(createError.NotFound())
