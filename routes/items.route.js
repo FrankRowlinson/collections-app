@@ -22,6 +22,11 @@ router.get('/unique', async (req, res, next) => {
   res.json({ item })
 })
 
+router.get('/favourite', async (req, res, next) => {
+  const items = await getItems.favourite(req.query.id)
+  res.json({ items })
+})
+
 // create or delete
 router.delete('/', checkUserAccess, async (req, res, next) => {
   const result = await deleteItems(req.body.ids, req.user.role, req.user.id)
